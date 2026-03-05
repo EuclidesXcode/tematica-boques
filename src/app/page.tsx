@@ -46,7 +46,8 @@ export default function Home() {
     setSelectedBouquet({
       ...bouquet,
       title: bouquet.name,
-      image: bouquet.images?.[0] || 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?auto=format&fit=crop&w=800&q=80'
+      image: bouquet.images?.[0] || 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?auto=format&fit=crop&w=800&q=80',
+      category: bouquet.category || 'premium'
     });
     setIsModalOpen(true);
   };
@@ -61,35 +62,22 @@ export default function Home() {
     setIsModalOpen(false);
   };
 
-  const handleFilterChange = (filters: any) => {
-    let result = allBouquets;
+  const handleFilterChange = (filters: { category: string | null; sortOrder: 'asc' | 'desc' | null }) => {
+    let result = [...allBouquets];
     setVisibleCount(ITEMS_PER_PAGE); // Reset visible count on filter
 
-    if (filters.colors.length > 0) {
-      result = result.filter(b =>
-        filters.colors.some((color: string) =>
-          b.name.toLowerCase().includes(color.toLowerCase()) ||
-          b.description.toLowerCase().includes(color.toLowerCase())
-        )
-      );
+    if (filters.category) {
+      result = result.filter(b => b.category === filters.category);
     }
 
-    if (filters.types.length > 0) {
-      result = result.filter(b =>
-        filters.types.some((type: string) =>
-          b.name.toLowerCase().includes(type.toLowerCase()) ||
-          b.description.toLowerCase().includes(type.toLowerCase())
-        )
-      );
-    }
-
-    if (filters.priceRange) {
-      const [min, max] = filters.priceRange.replace('+', '').split('-').map(Number);
-      if (max) {
-        result = result.filter(b => b.price >= min && b.price <= max);
-      } else {
-        result = result.filter(b => b.price >= min);
-      }
+    if (filters.sortOrder) {
+      result.sort((a, b) => {
+        if (filters.sortOrder === 'desc') {
+          return b.price - a.price;
+        } else {
+          return a.price - b.price;
+        }
+      });
     }
 
     setFilteredBouquets(result);
@@ -150,6 +138,7 @@ export default function Home() {
               price={bouquet.price}
               description={bouquet.description}
               imageUrl={bouquet.images?.[0] || 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?auto=format&fit=crop&w=800&q=80'}
+              category={bouquet.category}
               delay={index * 100}
               onBuy={() => handleBuyClick(bouquet)}
             />

@@ -6,11 +6,12 @@ interface CardProps {
     price: number;
     description: string;
     imageUrl: string;
+    category?: string;
     delay?: number;
     onBuy: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, delay = 0, onBuy }) => {
+const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, category, delay = 0, onBuy }) => {
     return (
         <div
             className={styles.card}
@@ -28,6 +29,7 @@ const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, delay 
                 />
             </div>
             <div className={styles.content}>
+                <div className={styles.categoryLabel}>{category || 'premium'}</div>
                 <div className={styles.header}>
                     <h3 className={styles.title}>{title}</h3>
                     <p className={styles.price}>R$ {price.toFixed(2)}</p>

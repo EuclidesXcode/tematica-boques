@@ -11,7 +11,7 @@ interface BuyModalProps {
         price: number;
         description: string;
         image: string;
-        type: string;
+        category: string;
     } | null;
     isOpen: boolean;
     onClose: () => void;
@@ -53,7 +53,7 @@ const BuyModal: React.FC<BuyModalProps> = ({ bouquet, isOpen, onClose, onConfirm
                     </div>
 
                     <div className={styles.detailsSection}>
-                        <span className={styles.category}>{bouquet.type}</span>
+                        <span className={styles.category}>{bouquet.category}</span>
                         <h2 className={styles.title}>{bouquet.title}</h2>
                         <p className={styles.price}>R$ {bouquet.price.toFixed(2)}</p>
                         <p className={styles.description}>{bouquet.description}</p>

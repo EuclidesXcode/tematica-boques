@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import styles from './Sidebar.module.css';
+import { Filter, X, ChevronRight, SlidersHorizontal, ArrowUpDown, Sparkles } from 'lucide-react';
 
 interface FilterState {
-    colors: string[];
-    types: string[];
-    priceRange: string | null;
+    category: string | null;
+    sortOrder: 'asc' | 'desc' | null;
 }
 
 interface SidebarProps {
@@ -16,51 +16,43 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [filters, setFilters] = useState<FilterState>({
-        colors: [],
-        types: [],
-        priceRange: null,
+        category: null,
+        sortOrder: null,
     });
 
     const toggleSidebar = () => setIsOpen(!isOpen);
 
-    const handleColorToggle = (color: string) => {
-        const newColors = filters.colors.includes(color)
-            ? filters.colors.filter((c) => c !== color)
-            : [...filters.colors, color];
-
-        const newFilters = { ...filters, colors: newColors };
+    const handleCategoryToggle = (category: string) => {
+        const newCategory = filters.category === category ? null : category;
+        const newFilters = { ...filters, category: newCategory };
         setFilters(newFilters);
         onFilterChange(newFilters);
     };
 
-    const handleTypeToggle = (type: string) => {
-        const newTypes = filters.types.includes(type)
-            ? filters.types.filter((t) => t !== type)
-            : [...filters.types, type];
-
-        const newFilters = { ...filters, types: newTypes };
+    const handleSortChange = (order: 'asc' | 'desc') => {
+        const newSort = filters.sortOrder === order ? null : order;
+        const newFilters = { ...filters, sortOrder: newSort };
         setFilters(newFilters);
         onFilterChange(newFilters);
     };
 
-    const handlePriceChange = (range: string) => {
-        const newPrice = filters.priceRange === range ? null : range;
-        const newFilters = { ...filters, priceRange: newPrice };
-        setFilters(newFilters);
-        onFilterChange(newFilters);
+    const clearFilters = () => {
+        const resetFilters: FilterState = { category: null, sortOrder: null };
+        setFilters(resetFilters);
+        onFilterChange(resetFilters);
     };
 
-    const colors = [
-        { name: 'Red', hex: '#ef5350' },
-        { name: 'White', hex: '#fff' },
-        { name: 'Pink', hex: '#ec407a' },
-        { name: 'Blue', hex: '#42a5f5' },
-        { name: 'Yellow', hex: '#ffeb3b' },
-        { name: 'Purple', hex: '#ab47bc' },
+    const categories = [
+        'premium',
+        'Mini Buquês',
+        'Flores individuais',
+        'Cestas',
+        'Presentes',
+        'Decorativas',
+        'Caixas Surpresa'
     ];
 
-    const types = ['Rosas', 'Lírios', 'Tulipas', 'Orquídeas', 'Margaridas', 'Girassóis'];
-    const prices = ['0-50', '50-100', '100-200', '200+'];
+    const isAnyFilterActive = filters.category !== null || filters.sortOrder !== null;
 
     return (
         <>
@@ -69,59 +61,65 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
                 onClick={toggleSidebar}
                 aria-label="Toggle filters"
             >
-                {isOpen ? '✕' : 'Filtros'}
+                {isOpen ? <X size={20} /> : <SlidersHorizontal size={20} />}
+                <span>{isOpen ? 'Fechar' : 'Filtrar'}</span>
             </button>
 
             <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+                <div className={styles.sidebarHeader}>
+                    <h2 className={styles.sidebarTitle}>
+                        <Filter size={18} />
+                        Filtros
+                    </h2>
+                    {isAnyFilterActive && (
+                        <button className={styles.clearBtn} onClick={clearFilters}>
+                            Limpar
+                        </button>
+                    )}
+                </div>
+
                 <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Filtrar por Cor</h3>
-                    <div className={styles.colorGroup}>
-                        {colors.map((c) => (
-                            <div
-                                key={c.name}
-                                className={`${styles.colorCircle} ${filters.colors.includes(c.name) ? styles.active : ''}`}
-                                style={{ backgroundColor: c.hex }}
-                                onClick={() => handleColorToggle(c.name)}
-                                title={c.name}
-                            />
+                    <h3 className={styles.sectionTitle}>
+                        <Sparkles size={14} />
+                        Categorias
+                    </h3>
+                    <div className={styles.categoryList}>
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className={`${styles.categoryBtn} ${filters.category === cat ? styles.active : ''}`}
+                                onClick={() => handleCategoryToggle(cat)}
+                            >
+                                <span>{cat}</span>
+                                <ChevronRight size={14} className={styles.arrow} />
+                            </button>
                         ))}
                     </div>
                 </div>
 
                 <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Tipo de Flor</h3>
-                    <div className={styles.filterGroup}>
-                        {types.map((type) => (
-                            <label key={type} className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    className={styles.checkbox}
-                                    checked={filters.types.includes(type)}
-                                    onChange={() => handleTypeToggle(type)}
-                                />
-                                {type}
-                            </label>
-                        ))}
+                    <h3 className={styles.sectionTitle}>
+                        <ArrowUpDown size={14} />
+                        Ordenar Preço
+                    </h3>
+                    <div className={styles.sortGroup}>
+                        <button
+                            className={`${styles.sortBtn} ${filters.sortOrder === 'desc' ? styles.active : ''}`}
+                            onClick={() => handleSortChange('desc')}
+                        >
+                            Menor Preço
+                        </button>
+                        <button
+                            className={`${styles.sortBtn} ${filters.sortOrder === 'asc' ? styles.active : ''}`}
+                            onClick={() => handleSortChange('asc')}
+                        >
+                            Maior Preço
+                        </button>
                     </div>
                 </div>
 
-                <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Faixa de Preço</h3>
-                    <div className={styles.filterGroup}>
-                        {prices.map((price) => (
-                            <label key={price} className={styles.checkboxLabel}>
-                                <input
-                                    type="radio"
-                                    name="price"
-                                    className={styles.checkbox}
-                                    checked={filters.priceRange === price}
-                                    onChange={() => handlePriceChange(price)}
-                                    value={price}
-                                />
-                                R$ {price}
-                            </label>
-                        ))}
-                    </div>
+                <div className={styles.infoBadge}>
+                    <p>Encontre o presente perfeito em segundos.</p>
                 </div>
             </aside>
         </>
