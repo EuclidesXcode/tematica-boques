@@ -4,8 +4,8 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
+    background: rgba(45, 45, 45, 0.4);
+    backdrop-filter: blur(8px);
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -16,41 +16,40 @@
 
 .modal {
     width: 100%;
-    max-width: 800px;
-    background: var(--sidebar-bg);
-    /* Using the glass sidebar background */
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    max-width: 850px;
+    background: #ffffff;
     border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
     display: flex;
     overflow: hidden;
     position: relative;
-    animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .closeButton {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
+    top: 1.25rem;
+    right: 1.25rem;
+    background: #ffffff;
+    border: 1px solid var(--glass-border);
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    color: var(--foreground);
+    width: 40px;
+    height: 40px;
+    color: var(--secondary);
     font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: var(--transition);
     z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .closeButton:hover {
     background: var(--primary);
+    color: white;
     transform: rotate(90deg);
 }
 
@@ -63,7 +62,8 @@
 .imageSection {
     width: 50%;
     position: relative;
-    min-height: 400px;
+    min-height: 500px;
+    background: #fdf5f5;
 }
 
 .image {
@@ -74,38 +74,43 @@
 
 .detailsSection {
     width: 50%;
-    padding: 2rem;
+    padding: 3rem 2.5rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background: #ffffff;
 }
 
 .category {
     color: var(--secondary);
     text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 2px;
-    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    margin-bottom: 1rem;
+    opacity: 0.8;
 }
 
 .title {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--foreground);
+    font-size: 2.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--secondary);
+    line-height: 1.1;
 }
 
 .price {
-    font-size: 2rem;
-    color: var(--primary);
-    font-weight: 600;
+    font-size: 1.75rem;
+    color: var(--foreground);
+    font-weight: 800;
     margin-bottom: 1.5rem;
 }
 
 .description {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
+    color: var(--foreground);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    opacity: 0.8;
 }
 
 .actions {
@@ -115,43 +120,51 @@
 }
 
 .buttonPrimary {
-    flex: 1;
-    padding: 1rem;
+    flex: 2;
+    padding: 1.1rem;
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    color: #fff;
+    color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 14px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: opacity 0.3s ease;
+    transition: var(--transition);
     text-align: center;
+    box-shadow: 0 4px 15px rgba(212, 165, 165, 0.4);
 }
 
 .buttonPrimary:hover {
-    opacity: 0.9;
-    box-shadow: 0 4px 15px rgba(214, 90, 104, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 165, 165, 0.5);
 }
 
 .buttonSecondary {
     flex: 1;
-    padding: 1rem;
+    padding: 1.1rem;
     background: transparent;
-    color: var(--foreground);
-    border: 1px solid var(--secondary);
-    border-radius: 8px;
-    font-weight: 600;
+    color: var(--secondary);
+    border: 2px solid var(--primary);
+    border-radius: 14px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     text-align: center;
 }
 
 .buttonSecondary:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--accent);
+    transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
+    .modal {
+        max-width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
     .modalContent {
         flex-direction: column;
     }
@@ -162,15 +175,19 @@
     }
 
     .imageSection {
-        min-height: 250px;
+        min-height: 300px;
     }
 
     .detailsSection {
-        padding: 1.5rem;
+        padding: 2rem 1.5rem;
     }
 
     .title {
-        font-size: 1.8rem;
+        font-size: 1.75rem;
+    }
+
+    .actions {
+        flex-direction: column;
     }
 }
 
@@ -186,7 +203,7 @@
 
 @keyframes slideUp {
     from {
-        transform: translateY(50px);
+        transform: translateY(30px);
         opacity: 0;
     }
 

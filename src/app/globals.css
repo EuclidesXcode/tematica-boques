@@ -1,14 +1,16 @@
 :root {
-  --background: #1a1025;
-  --foreground: #f8f5f2;
-  --primary: #d65a68;
-  --secondary: #e08e98;
-  --accent: #ffcb74;
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --sidebar-bg: rgba(26, 16, 37, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --background: #ffffff;
+  --foreground: #2d2d2d;
+  /* Darker for better contrast */
+  --primary: #f8c8dc;
+  --secondary: #9c6d6d;
+  /* Darker Dusty Rose for headlines */
+  --accent: #fdf5f5;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --sidebar-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(212, 165, 165, 0.3);
+  --shadow-lg: 0 8px 32px 0 rgba(156, 109, 109, 0.15);
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -23,7 +25,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   font-family: var(--font-outfit), sans-serif;
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
   scroll-behavior: smooth;
 }
@@ -80,7 +82,8 @@ button {
 }
 
 .title-gradient {
-  background: linear-gradient(to right, var(--secondary), var(--accent));
+  background: linear-gradient(to right, var(--secondary), var(--primary));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
