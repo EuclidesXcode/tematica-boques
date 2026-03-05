@@ -46,7 +46,7 @@ const BuyModal: React.FC<BuyModalProps> = ({ bouquet, isOpen, onClose, onConfirm
                             src={bouquet.image}
                             alt={bouquet.title}
                             fill
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: 'contain' }}
                             className={styles.image}
                             unoptimized
                         />
