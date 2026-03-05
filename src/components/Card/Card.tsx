@@ -36,7 +36,7 @@ const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, catego
                 </div>
                 <p className={styles.description}>{description}</p>
                 <div className={styles.action}>
-                    <button className={styles.button} onClick={onBuy}>Comprar</button>
+                    <button className={styles.button} onClick={onBuy}>Mais Detalhes</button>
                 </div>
             </div>
         </div>

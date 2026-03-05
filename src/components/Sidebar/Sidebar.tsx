@@ -43,9 +43,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
     };
 
     const categories = [
-        'premium',
+        'Premium',
         'Mini Buquês',
-        'Flores individuais',
+        'Flores Individuais',
         'Cestas',
         'Presentes',
         'Decorativas',
@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
                                 className={`${styles.categoryBtn} ${filters.category === cat ? styles.active : ''}`}
                                 onClick={() => handleCategoryToggle(cat)}
                             >
-                                <span>{cat}</span>
+                                <span>{cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
                                 <ChevronRight size={14} className={styles.arrow} />
                             </button>
                         ))}
