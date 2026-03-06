@@ -6,7 +6,7 @@ import styles from './page.module.css';
 import Petals from '@/components/Petals/Petals';
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Card from '@/components/Card/Card';
-import BuyModal from '@/components/Modal/BuyModal';
+import BuyModal, { BuyerData } from '@/components/Modal/BuyModal';
 import { createClient } from '@/lib/supabase';
 
 const ITEMS_PER_PAGE = 6;
@@ -57,10 +57,55 @@ export default function Home() {
     setTimeout(() => setSelectedBouquet(null), 300);
   };
 
-  const handleConfirmPurchase = () => {
-    alert(`Compra de "${selectedBouquet?.name}" iniciada! Em breve: fluxo de checkout.`);
-    setIsModalOpen(false);
+  const handleConfirmPurchase = async (data: BuyerData) => {
+    try {
+      // 1. Save sale to Supabase
+      const { error } = await supabase
+        .from("sales")
+        .insert([{
+          bouquet_id: selectedBouquet?.id,
+          total_price: selectedBouquet?.price,
+          buyer_name: data.name,
+          buyer_phone: data.phone,
+          buyer_address: data.address,
+          wants_to_register: data.wantsRegister,
+          payment_method: 'Pix', // Defaulting to Pix for WA flow
+          quantity: 1
+        }]);
+
+      if (error) {
+        console.error("Erro ao salvar venda:", error);
+        // Even if saving fails, we proceed with WhatsApp as it's the primary channel
+      }
+
+      // 2. Clear Modal
+      setIsModalOpen(false);
+
+      // 3. Construct WhatsApp Message
+      const message = `Olá! Vi este buquê no site e gostaria de finalizar a compra.%0A%0A` +
+        `*Detalhes do Produto:*%0A` +
+        `- Produto: *${selectedBouquet?.title}*%0A` +
+        `- Categoria: ${selectedBouquet?.category}%0A` +
+        `- Preço: *R$ ${selectedBouquet?.price.toFixed(2)}*%0A%0A` +
+        `*Dados do Comprador:*%0A` +
+        `- Nome: ${data.name}%0A` +
+        `- WhatsApp: ${data.phone}%0A` +
+        `- Endereço: ${data.address || 'Não informado'}%0A` +
+        `- Deseja se cadastrar: ${data.wantsRegister ? 'Sim' : 'Não'}`;
+
+      const whatsappNumber = "5511999999999"; // Replace with actual business number
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+
+      // 4. Redirect
+      window.open(whatsappUrl, '_blank');
+
+      alert("Pedido enviado! Você será redirecionado para o WhatsApp para finalizar o pagamento.");
+    } catch (error) {
+      console.error("Erro no processo de compra:", error);
+      alert("Ocorreu um erro ao processar sua compra. Tente novamente.");
+    }
   };
+
 
   const handleFilterChange = (filters: { category: string | null; sortOrder: 'asc' | 'desc' | null }) => {
     let result = [...allBouquets];
