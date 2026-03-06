@@ -76,14 +76,20 @@ export default function Home() {
   const handleConfirmPurchase = async (data: BuyerData) => {
     try {
       // 1. Save sale to Supabase — required before redirecting
+      const price = selectedBouquet?.price || 0;
+      const costPrice = selectedBouquet?.cost_price || 0;
+      const commission = selectedBouquet?.fixed_commission ?? 7;
+      // Pix = no card tax; formula matches back-office: (totalPrice * taxRate) / 100
+      const taxValue = 0; // always Pix on website = no card fee
+
       const { error } = await supabase
         .from("sales")
         .insert([{
           bouquet_id: selectedBouquet?.id,
-          total_price: selectedBouquet?.price,
-          cost_price_at_sale: selectedBouquet?.cost_price || 0,
-          tax_value: selectedBouquet?.card_tax || 0,
-          commission_value: selectedBouquet?.fixed_commission || 7,
+          total_price: price,
+          cost_price_at_sale: costPrice,
+          tax_value: taxValue,
+          commission_value: commission,
           buyer_name: data.name,
           buyer_phone: data.phone,
           buyer_address: data.address,
