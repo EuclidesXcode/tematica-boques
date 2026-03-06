@@ -81,6 +81,9 @@ export default function Home() {
         .insert([{
           bouquet_id: selectedBouquet?.id,
           total_price: selectedBouquet?.price,
+          cost_price_at_sale: selectedBouquet?.cost_price || 0,
+          tax_value: selectedBouquet?.card_tax || 0,
+          commission_value: selectedBouquet?.fixed_commission || 7,
           buyer_name: data.name,
           buyer_phone: data.phone,
           buyer_address: data.address,
