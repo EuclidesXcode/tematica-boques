@@ -75,7 +75,7 @@ export default function Home() {
 
   const handleConfirmPurchase = async (data: BuyerData) => {
     try {
-      // 1. Save sale to Supabase
+      // 1. Save sale to Supabase — required before redirecting
       const { error } = await supabase
         .from("sales")
         .insert([{
@@ -85,19 +85,32 @@ export default function Home() {
           buyer_phone: data.phone,
           buyer_address: data.address,
           wants_to_register: data.wantsRegister,
-          payment_method: 'Pix', // Defaulting to Pix for WA flow
+          payment_method: 'Pix',
           quantity: 1
         }]);
 
       if (error) {
-        console.error("Erro ao salvar venda:", error);
-        // Even if saving fails, we proceed with WhatsApp as it's the primary channel
+        console.error("Erro ao salvar venda no Supabase:", error);
+        throw new Error(`Falha ao registrar venda: ${error.message}`);
       }
 
-      // 2. Clear Modal
+      // 2. Refresh the sales count map so the badge updates immediately
+      const { data: salesData } = await supabase
+        .from("sales")
+        .select("bouquet_id, quantity");
+
+      const countMap: Record<string, number> = {};
+      (salesData || []).forEach((sale: any) => {
+        if (sale.bouquet_id) {
+          countMap[sale.bouquet_id] = (countMap[sale.bouquet_id] || 0) + (sale.quantity || 1);
+        }
+      });
+      setSalesCountMap(countMap);
+
+      // 3. Close modal
       setIsModalOpen(false);
 
-      // 3. Construct WhatsApp Message
+      // 4. Construct WhatsApp Message
       const message = `Olá! Vi este buquê no site e gostaria de finalizar a compra.%0A%0A` +
         `*Detalhes do Produto:*%0A` +
         `- Produto: *${selectedBouquet?.title}*%0A` +
@@ -109,16 +122,15 @@ export default function Home() {
         `- Endereço: ${data.address || 'Não informado'}%0A` +
         `- Deseja se cadastrar: ${data.wantsRegister ? 'Sim' : 'Não'}`;
 
-      const whatsappNumber = "5541989015380"; // Replace with actual business number
+      const whatsappNumber = "5541989015380";
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
-      // 4. Redirect
+      // 5. Redirect to WhatsApp
       window.open(whatsappUrl, '_blank');
 
-      alert("Pedido enviado! Você será redirecionado para o WhatsApp para finalizar o pagamento.");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro no processo de compra:", error);
-      alert("Ocorreu um erro ao processar sua compra. Tente novamente.");
+      alert(`Ocorreu um erro ao processar sua compra:\n${error.message || 'Tente novamente.'}`);
     }
   };
 
