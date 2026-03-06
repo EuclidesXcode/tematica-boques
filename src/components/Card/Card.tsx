@@ -8,10 +8,11 @@ interface CardProps {
     imageUrl: string;
     category?: string;
     delay?: number;
+    salesCount?: number;
     onBuy: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, category, delay = 0, onBuy }) => {
+const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, category, delay = 0, salesCount = 0, onBuy }) => {
     return (
         <div
             className={styles.card}
@@ -27,6 +28,11 @@ const Card: React.FC<CardProps> = ({ title, price, description, imageUrl, catego
                     className={styles.image}
                     unoptimized // For external images without loader config
                 />
+                {salesCount > 0 && (
+                    <div className={styles.salesBadge}>
+                        {salesCount} {salesCount === 1 ? 'vendido' : 'vendidos'}
+                    </div>
+                )}
             </div>
             <div className={styles.content}>
                 <div className={styles.categoryLabel}>{category || 'premium'}</div>

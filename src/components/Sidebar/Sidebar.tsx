@@ -6,7 +6,7 @@ import { Filter, X, ChevronRight, SlidersHorizontal, ArrowUpDown, Sparkles } fro
 
 interface FilterState {
     category: string | null;
-    sortOrder: 'asc' | 'desc' | null;
+    sortOrder: 'asc' | 'desc' | 'bestsellers' | null;
 }
 
 interface SidebarProps {
@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
         onFilterChange(newFilters);
     };
 
-    const handleSortChange = (order: 'asc' | 'desc') => {
+    const handleSortChange = (order: 'asc' | 'desc' | 'bestsellers') => {
         const newSort = filters.sortOrder === order ? null : order;
         const newFilters = { ...filters, sortOrder: newSort };
         setFilters(newFilters);
@@ -100,9 +100,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onFilterChange }) => {
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>
                         <ArrowUpDown size={14} />
-                        Ordenar Preço
+                        Ordenar por
                     </h3>
                     <div className={styles.sortGroup}>
+                        <button
+                            className={`${styles.sortBtn} ${filters.sortOrder === 'bestsellers' ? styles.active : ''}`}
+                            onClick={() => handleSortChange('bestsellers')}
+                        >
+                            🔥 Mais Vendidos
+                        </button>
                         <button
                             className={`${styles.sortBtn} ${filters.sortOrder === 'desc' ? styles.active : ''}`}
                             onClick={() => handleSortChange('desc')}

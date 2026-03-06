@@ -18,28 +18,44 @@ export default function Home() {
   const [selectedBouquet, setSelectedBouquet] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [salesCountMap, setSalesCountMap] = useState<Record<string, number>>({});
 
   const supabase = createClient();
 
   useEffect(() => {
-    async function fetchBouquets() {
+    async function fetchData() {
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        // Fetch bouquets
+        const { data: bouquetsData, error: bouquetsError } = await supabase
           .from("bouquets")
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (error) throw error;
-        setAllBouquets(data || []);
-        setFilteredBouquets(data || []);
+        if (bouquetsError) throw bouquetsError;
+        const bouquets = bouquetsData || [];
+        setAllBouquets(bouquets);
+        setFilteredBouquets(bouquets);
+
+        // Fetch sales to compute count per bouquet
+        const { data: salesData } = await supabase
+          .from("sales")
+          .select("bouquet_id, quantity");
+
+        const countMap: Record<string, number> = {};
+        (salesData || []).forEach((sale: any) => {
+          if (sale.bouquet_id) {
+            countMap[sale.bouquet_id] = (countMap[sale.bouquet_id] || 0) + (sale.quantity || 1);
+          }
+        });
+        setSalesCountMap(countMap);
       } catch (error) {
-        console.error("Erro ao buscar buquês:", error);
+        console.error("Erro ao buscar dados:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchBouquets();
+    fetchData();
   }, []);
 
   const handleBuyClick = (bouquet: any) => {
@@ -93,7 +109,7 @@ export default function Home() {
         `- Endereço: ${data.address || 'Não informado'}%0A` +
         `- Deseja se cadastrar: ${data.wantsRegister ? 'Sim' : 'Não'}`;
 
-      const whatsappNumber = "5511999999999"; // Replace with actual business number
+      const whatsappNumber = "5541989015380"; // Replace with actual business number
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
       // 4. Redirect
@@ -107,7 +123,7 @@ export default function Home() {
   };
 
 
-  const handleFilterChange = (filters: { category: string | null; sortOrder: 'asc' | 'desc' | null }) => {
+  const handleFilterChange = (filters: { category: string | null; sortOrder: 'asc' | 'desc' | 'bestsellers' | null }) => {
     let result = [...allBouquets];
     setVisibleCount(ITEMS_PER_PAGE); // Reset visible count on filter
 
@@ -115,14 +131,12 @@ export default function Home() {
       result = result.filter(b => b.category === filters.category);
     }
 
-    if (filters.sortOrder) {
-      result.sort((a, b) => {
-        if (filters.sortOrder === 'desc') {
-          return b.price - a.price;
-        } else {
-          return a.price - b.price;
-        }
-      });
+    if (filters.sortOrder === 'bestsellers') {
+      result.sort((a, b) => (salesCountMap[b.id] || 0) - (salesCountMap[a.id] || 0));
+    } else if (filters.sortOrder === 'desc') {
+      result.sort((a, b) => b.price - a.price);
+    } else if (filters.sortOrder === 'asc') {
+      result.sort((a, b) => a.price - b.price);
     }
 
     setFilteredBouquets(result);
@@ -185,6 +199,7 @@ export default function Home() {
               imageUrl={bouquet.images?.[0] || 'https://images.unsplash.com/photo-1562690868-60bbe7293e94?auto=format&fit=crop&w=800&q=80'}
               category={bouquet.category}
               delay={index * 100}
+              salesCount={salesCountMap[bouquet.id] || 0}
               onBuy={() => handleBuyClick(bouquet)}
             />
           ))}
