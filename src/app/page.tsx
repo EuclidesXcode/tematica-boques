@@ -188,7 +188,7 @@ export default function Home() {
         <section className={styles.introSection}>
           <div className={styles.profileImageWrapper}>
             <Image
-              src="/perfil.png"
+              src="/perfil.jpeg"
               alt="Dona da Temática Buquês"
               width={180}
               height={180}
